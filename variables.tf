@@ -13,3 +13,7 @@ variable "instance_type" {
     prod = "t2.medium"
   }
 }
+variable "cidr" {
+  type = "list"
+  default = ["0.0.0.0/0"]
+}

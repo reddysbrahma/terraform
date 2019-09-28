@@ -26,7 +26,7 @@ resource "aws_security_group" "websg" {
     from_port = 80
     to_port = 80
     protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = "${var.cidr}"
   }
 
 
@@ -38,7 +38,7 @@ resource "aws_security_group_rule" "ssh" {
   from_port = 22
   to_port = 22
   protocol = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks = "${var.cidr}"
 }
 
 resource "aws_security_group" "elbsg" {
@@ -47,14 +47,14 @@ resource "aws_security_group" "elbsg" {
     from_port = 80
     to_port = 80
     protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = "${var.cidr}"
   }
 
   egress {
     from_port = 0
     to_port = 0
     protocol = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = "${var.cidr}"
   }
 }
 
@@ -85,12 +85,13 @@ nohup busybox httpd -f -p 80 &
 EOF
 }
 
+#data aws_availability_zones "availablezones" {}
 
 resource "aws_elb" "elb1" {
   name = "terraform-elb"
+  #availability_zones = "${data.aws_availability_zones.availablezones[count.index]}"
   availability_zones = "${var.azs}"
   security_groups = ["${aws_security_group.elbsg.id}"]
-
   listener {
     instance_port = 80
     instance_protocol = "http"
