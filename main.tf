@@ -1,5 +1,5 @@
 provider "aws" {
-region = "us-east-1"
+region = var.region
 }
 data "aws_ami" "ubuntu" {
   most_recent = true
@@ -61,7 +61,7 @@ resource "aws_security_group" "elbsg" {
 
 resource aws_instance "web1" {
   ami           = "${data.aws_ami.ubuntu.id}"
-  instance_type = "t2.micro"
+  instance_type = "${lookup(var.instance_type,var.env )}"
 vpc_security_group_ids = ["${aws_security_group.websg.id}"]
   key_name = "elb"
 
@@ -74,7 +74,7 @@ EOF
 
 resource aws_instance "web2" {
   ami           = "${data.aws_ami.ubuntu.id}"
-  instance_type = "t2.micro"
+  instance_type = "${lookup(var.instance_type,var.env )}"
   vpc_security_group_ids = ["${aws_security_group.websg.id}"]
   key_name = "elb"
 
@@ -88,7 +88,7 @@ EOF
 
 resource "aws_elb" "elb1" {
   name = "terraform-elb"
-  availability_zones = ["us-east-1a", "us-east-1b"]
+  availability_zones = "${var.azs}"
   security_groups = ["${aws_security_group.elbsg.id}"]
 
   listener {
