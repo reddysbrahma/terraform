@@ -16,10 +16,9 @@ data "aws_ami" "ubuntu" {
 
   owners = ["099720109477"] # Canonical
 }
-resource aws_key_pair "myawskeypair" {
-  key_name = "myawskeypair"
-  public_key = "${file("awskey.pub")}"
-}
+
+
+
 
 resource "aws_security_group" "websg" {
   name = "security_group_for_web_server"
@@ -60,12 +59,12 @@ resource "aws_security_group" "elbsg" {
 }
 
 
-
-
 resource aws_instance "web1" {
   ami           = "${data.aws_ami.ubuntu.id}"
   instance_type = "t2.micro"
 vpc_security_group_ids = ["${aws_security_group.websg.id}"]
+  key_name = "elb"
+
 user_data = <<-EOF
 #!/bin/bash
 echo “hello, I am web1” >index.html
@@ -77,7 +76,8 @@ resource aws_instance "web2" {
   ami           = "${data.aws_ami.ubuntu.id}"
   instance_type = "t2.micro"
   vpc_security_group_ids = ["${aws_security_group.websg.id}"]
-  key_name = "${aws_key_pair.myawskeypair.key_name}"
+  key_name = "elb"
+
   user_data = <<-EOF
 #!/bin/bash
 echo “hello, I am web2” >index.html
