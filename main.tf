@@ -1,6 +1,17 @@
 provider "aws" {
 region = var.region
 }
+
+terraform {
+  backend "s3" {
+    region = "us-east-1"
+    encrypt = true
+    bucket = "brahma-terraform-test"
+    dynamodb_table = "tflocktable"
+    key = "test.tfstate"
+    lock_table = "false"
+  }
+}
 data "aws_ami" "ubuntu" {
   most_recent = true
 
