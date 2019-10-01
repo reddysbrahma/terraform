@@ -16,19 +16,19 @@ data "aws_ami" "ubuntu" {
 
   owners = ["099720109477"] # Canonical
 }
-
-resource "aws_s3_bucket" "terraform-s3" {
-  bucket = "terraform-s3-test-brahma-reddy-seelam"
-  versioning {
-    enabled = true
-  }
-  lifecycle {
-    prevent_destroy = true
-  }
-  tags = {
-    Name  = "s3 remote state file store"
-  }
-}
+#enable this only for the first time -- creating the s3 bucket
+#resource "aws_s3_bucket" "terraform-s3" {
+#  bucket = "terraform-s3-test-brahma-reddy-seelam"
+#  versioning {
+#    enabled = true
+ # }
+ # lifecycle {
+ #   prevent_destroy = true
+  #}
+  #tags = {
+  #  Name  = "s3 remote state file store"
+  #}
+#}
 resource "aws_dynamodb_table" "tflocktable" {
   hash_key = "LockID"
   name = "tflocktable"
