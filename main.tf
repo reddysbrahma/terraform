@@ -1,6 +1,31 @@
 provider "aws" {
 region = var.region
 }
+#enable this only for the first time -- creating the s3 bucket
+#resource "aws_s3_bucket" "terraform-s3" {
+#  bucket = "terraform-s3-test-brahma-reddy-seelam"
+#  versioning {
+#    enabled = true
+ # }
+ # lifecycle {
+ #   prevent_destroy = true
+  #}
+  #tags = {
+  #  Name  = "s3 remote state file store"
+  #}
+#}
+#resource "aws_dynamodb_table" "tflocktable" {
+#  hash_key = "LockID"
+#  name = "tflocktable"
+#  read_capacity = 5
+#  write_capacity = 5
+#  attribute {
+#    name = "LockID"
+#    type = "S"
+#  }
+#}
+
+
 
 terraform {
   backend "s3" {
