@@ -17,9 +17,39 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
+resource "aws_s3_bucket" "terraform-s3" {
+  bucket = "terraform-s3-test-brahma-reddy-seelam"
+  versioning {
+    enabled = true
+  }
+  lifecycle {
+    prevent_destroy = true
+  }
+  tags = {
+    Name  = "s3 remote state file store"
+  }
+}
+resource "aws_dynamodb_table" "tflocktable" {
+  hash_key = "LockID"
+  name = "tflocktable"
+  read_capacity = 5
+  write_capacity = 5
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
+}
 
-
-
+terraform {
+  backend "s3" {
+    region = "us-east-1"
+    encrypt = true
+    bucket = "terraform-s3-test-brahma-reddy-seelam"
+    dynamodb_table = "tflocktable"
+    key = "test.tfstate"
+    lock_table = "false"
+  }
+}
 resource "aws_security_group" "websg" {
   name = "security_group_for_web_server"
   ingress {
@@ -111,8 +141,4 @@ resource "aws_elb" "elb1" {
   connection_draining = true
   connection_draining_timeout = 400
 
-}
-
-output "elb-dns" {
-value = "${aws_elb.elb1.dns_name}"
 }
